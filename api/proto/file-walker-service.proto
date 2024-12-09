@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package filewatcher;
+
+option go_package = "./internal/pb";
+
+service FileWatcher {
+  rpc Subscribe(SubscribeRequest) returns (stream FileChangeNotification);
+}
+
+message SubscribeRequest {}
+
+message FileChangeNotification { string content = 1; }
