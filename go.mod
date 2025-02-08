@@ -4,8 +4,11 @@ go 1.23.3
 
 replace example.com/file-walker/internal/pb => ./internal/pb
 
+replace example.com/file-walker/internal/stringutil => ./internal/stringutil
+
 require (
 	example.com/file-walker/internal/pb v1.0.0
+	example.com/file-walker/internal/stringutil v1.0.0
 	google.golang.org/grpc v1.68.1
 )
 

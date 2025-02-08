@@ -12,7 +12,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pb "example.com/file-walker/internal/pb"
+	"example.com/file-walker/internal/pb"
+	"example.com/file-walker/internal/stringutil"
 )
 
 func doClient(serverAddr string, destinationPath string) {
@@ -46,13 +47,15 @@ func doClient(serverAddr string, destinationPath string) {
 			break
 		}
 
+		strippedString := stringutil.StripControlCharacters(event.Content)
+
 		// Write the content to destination file
 		file, err := os.OpenFile(destinationPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
 		if err != nil {
 			log.Printf("Failed to open file for writing: %s", err.Error())
 		} else {
+			file.WriteString(strippedString)
 			file.Close()
-			file.WriteString(event.Content)
 		}
 	}
 }
