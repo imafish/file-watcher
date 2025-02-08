@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net"
@@ -13,11 +14,6 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	pb "example.com/file-walker/internal/pb"
-)
-
-const (
-	port          = ":50051"
-	fileToMonitor = "/home/ubuntu/tmp/console.output"
 )
 
 type fileWatcherServer struct {
@@ -55,14 +51,14 @@ func (s *fileWatcherServer) Subscribe(req *pb.SubscribeRequest, stream pb.FileWa
 	}
 }
 
-func monitorFile(filePath string, notify func(string)) {
+func monitorFile(filePath string, timeToWait int, linesToFetch int, notify func(string)) {
 	var lastLines []string
 
 	for {
 		file, err := os.Open(filePath)
 		if err != nil {
 			log.Printf("Error opening file: %v", err)
-			time.Sleep(time.Second)
+			time.Sleep(time.Second * time.Duration(timeToWait))
 			continue
 		}
 
@@ -70,21 +66,21 @@ func monitorFile(filePath string, notify func(string)) {
 		if err != nil {
 			log.Printf("Error getting file stats: %v", err)
 			file.Close()
-			time.Sleep(time.Second)
+			time.Sleep(time.Second * time.Duration(timeToWait))
 			continue
 		}
 
 		if stat.Size() == 0 {
 			file.Close()
-			time.Sleep(time.Second)
+			time.Sleep(time.Second * time.Duration(timeToWait))
 			continue
 		}
 
-		lines, err := readLastNLines(file, 12)
+		lines, err := readLastNLines(file, linesToFetch)
 		file.Close()
 		if err != nil {
-			log.Printf("Error reading last 12 lines: %v", err)
-			time.Sleep(time.Second)
+			log.Printf("Error reading last %d lines: %v", linesToFetch, err)
+			time.Sleep(time.Second * time.Duration(timeToWait))
 			continue
 		}
 
@@ -93,7 +89,7 @@ func monitorFile(filePath string, notify func(string)) {
 			notify(strings.Join(lines, "\n"))
 		}
 
-		time.Sleep(time.Second)
+		time.Sleep(time.Second * time.Duration(timeToWait))
 	}
 }
 
@@ -176,7 +172,22 @@ func equalSlices(a, b []string) bool {
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
+	// Define the command-line flags with default values
+	linesToFetch := flag.Int("l", 8, "lines to keep")
+	timeToWait := flag.Int("i", 15, "intervals in seconds between each scan")
+	port := flag.Int("p", 50051, "port to listen")
+	fileToWatch := flag.String("f", os.Getenv("HOME")+"/.tmp/console.output", "file to watch")
+
+	// Parse the flags
+	flag.Parse()
+
+	// Print the parsed values
+	fmt.Printf("Lines to keep: %d\n", *linesToFetch)
+	fmt.Printf("Interval: %d seconds\n", *timeToWait)
+	fmt.Printf("Port: %d\n", *port)
+	fmt.Printf("File to watch: %s\n", *fileToWatch)
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
@@ -186,7 +197,7 @@ func main() {
 	pb.RegisterFileWatcherServer(s, fileWatcherServer)
 	reflection.Register(s)
 
-	go monitorFile(fileToMonitor, func(update string) {
+	go monitorFile(*fileToWatch, *timeToWait, *linesToFetch, func(update string) {
 		// Notify all subscribers
 		fileWatcherServer.subscribers.Range(func(key, value interface{}) bool {
 			sub := value.(*subscriber)
