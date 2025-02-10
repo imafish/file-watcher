@@ -54,6 +54,7 @@ func doClient(serverAddr string, destinationPath string) {
 		if err != nil {
 			log.Printf("Failed to open file for writing: %s", err.Error())
 		} else {
+			log.Printf("Update content: %s", strippedString)
 			file.WriteString(strippedString)
 			file.Close()
 		}

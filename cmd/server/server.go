@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	pb "example.com/file-walker/internal/pb"
+	"example.com/file-walker/internal/pb"
 )
 
 type fileWatcherServer struct {
@@ -149,12 +149,14 @@ func readLastNLines(file *os.File, n int) ([]string, error) {
 		lines = append(lines, string(line))
 	}
 
-	// Revert the lines because we read from back to front
-	if len(lines) > 1 {
-		for i, j := 0, len(lines)-1; i < j; i, j = i+1, j-1 {
-			lines[i], lines[j] = lines[j], lines[i]
+	/*
+		// Revert the lines because we read from back to front
+		if len(lines) > 1 {
+			for i, j := 0, len(lines)-1; i < j; i, j = i+1, j-1 {
+				lines[i], lines[j] = lines[j], lines[i]
+			}
 		}
-	}
+	*/
 
 	return lines, nil
 }
