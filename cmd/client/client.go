@@ -47,7 +47,7 @@ func doClient(serverAddr string, destinationPath string) {
 			break
 		}
 
-		strippedString := stringutil.StripControlCharacters(event.Content)
+		strippedString := stringutil.StripColorCodes(event.Content)
 
 		// Write the content to destination file
 		file, err := os.OpenFile(destinationPath, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)

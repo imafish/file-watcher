@@ -1,6 +1,9 @@
 package stringutil
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 // StripControlCharacters removes ASCII control characters from the input string.
 func StripControlCharacters(input string) string {
@@ -11,4 +14,11 @@ func StripControlCharacters(input string) string {
 		}
 	}
 	return sb.String()
+}
+
+// StripColorCodes removes ANSI color codes from a string.
+func StripColorCodes(s string) string {
+	// Regular expression to match ANSI escape codes
+	re := regexp.MustCompile(`\x1B\[[0-?9;]*[mK]`)
+	return re.ReplaceAllString(s, "")
 }
