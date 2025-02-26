@@ -3,7 +3,8 @@
 ## Bootstrap
 
 ### install protoc compiler
-Download from https://github.com/protocolbuffers/protobuf/releases and install to PATH
+
+Download from [protoc_compiler_github](https://github.com/protocolbuffers/protobuf/releases) and install to PATH
 
 ### install go compiler for protobuf and gRPC
 
@@ -14,9 +15,13 @@ sudo go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 ## Build (manually)
 
-1. compile .proto files: `protoc --go_out=internal/pb --go_opt=paths=source_relative --go-grpc_out=internal/pb --go-grpc_opt=paths=source_relative api/proto/file-walker-service.proto`
-2. get dependencies: `go get`
-3. build server:
+1. compile .proto files:
+
+``` bash
+protoc --go_out=. --go-grpc_out=. api/proto/file-watcher-service.proto
+```
+
+2. build server:
 
 ``` bash
 cd cmd/server
@@ -24,7 +29,7 @@ cd cmd/server
 go --GOOS=darwin --GOARCH=arm64 build
 ```
 
-4. build client
+3. build client
 
 ``` bash
 cd cmd/client

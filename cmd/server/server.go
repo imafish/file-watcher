@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	"example.com/file-walker/internal/pb"
+	"internal/pb"
 )
 
 type fileWatcherServer struct {

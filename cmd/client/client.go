@@ -12,8 +12,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"example.com/file-walker/internal/pb"
-	"example.com/file-walker/internal/stringutil"
+	"internal/pb"
+	"internal/stringutil"
 )
 
 func doClient(serverAddr string, destinationPath string) {
