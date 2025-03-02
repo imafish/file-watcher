@@ -1,4 +1,4 @@
-module pb
+module github.com/imafish/file-watcher/internal/pb
 
 go 1.23.3
 

@@ -7,9 +7,9 @@ replace internal/pb => ../../internal/pb
 replace internal/stringutil => ../../internal/stringutil
 
 require (
+	google.golang.org/grpc v1.68.1
 	internal/pb v1.0.0
 	internal/stringutil v1.0.0
-	google.golang.org/grpc v1.68.1
 )
 
 require (
