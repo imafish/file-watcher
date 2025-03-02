@@ -1,0 +1,22 @@
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_proto_grpc_go//:defs.bzl", "go_grpc_compile", "go_grpc_library")
+
+proto_library(
+    name = "pb_proto",
+    srcs = ["file-watcher-service.proto"],
+    visibility = ["//visibility:public"],
+)
+
+go_grpc_compile(
+    name = "pb_go_proto",
+    protos = [":pb_proto"],
+    compilers = ["@io_bazel_rules_go//proto:go_grpc"],
+    visibility = ["//visibility:public"],
+)
+
+go_grpc_library(
+    name = "pb_go_grpc_library",
+    importpath = "github.com/imafish/file-watcher/internal/pb",
+    protos = [":pb_proto"],
+    visibility = ["//visibility:public"],
+)
